@@ -74,18 +74,18 @@ class Chef
         config[:stash_username] = ask("Stash Username for #{get_config(:stash_hostname)}: ") { |q| q.echo = "*" } unless get_config(:stash_username)
         config[:stash_password] = ask("Stash Password for #{get_config(:stash_username)}: ") { |q| q.echo = "*" } unless get_config(:stash_password)
         
-        connection = Faraday.new(:url => "https://#{get_config(:stash_hostname)}", :ssl => {:verify => false}) do |faraday|
+        connection = Faraday.new(:url => "http://#{get_config(:stash_hostname)}:7990", :ssl => {:verify => false}) do |faraday|
           faraday.request  :url_encoded # form-encode POST params
-          #faraday.response :logger      # log requests to STDOUT
+          faraday.response :logger      # log requests to STDOUT
           faraday.adapter  :net_http    # make requests with Net::HTTP
         end
         connection.basic_auth(get_config(:stash_username),get_config(:stash_password))
-        connection.url_prefix = "https://#{get_config(:stash_hostname)}/rest/api/1.0"
+        connection.url_prefix = "http://#{get_config(:stash_hostname)}:7990/rest/api/1.0"
         connection
     	end
 
       def get_repo_https_url(project_key,repo)
-        "https://#{get_config(:stash_username)}@#{get_config(:stash_hostname)}/scm/#{project_key}/#{repo}.git"
+        "http://#{get_config(:stash_username)}@#{get_config(:stash_hostname)}/scm/#{project_key}/#{repo}.git"
       end
 
       def get_repo_ssh_url(project_key,repo)
