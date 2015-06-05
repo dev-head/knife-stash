@@ -76,7 +76,7 @@ class Chef
         
         connection = Faraday.new(:url => "http://#{get_config(:stash_hostname)}:7990", :ssl => {:verify => false}) do |faraday|
           faraday.request  :url_encoded # form-encode POST params
-          faraday.response :logger      # log requests to STDOUT
+          #faraday.response :logger      # log requests to STDOUT
           faraday.adapter  :net_http    # make requests with Net::HTTP
         end
         connection.basic_auth(get_config(:stash_username),get_config(:stash_password))
