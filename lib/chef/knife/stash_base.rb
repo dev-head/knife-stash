@@ -31,19 +31,23 @@ class Chef
           option :stash_username,
             :short => "-u USERNAME",
             :long => "--stash-username USERNAME",
-            :description => "The username for Stash"
+            :description => "The username for Stash",
+            :proc => Proc.new { |key| Chef::Config[:knife][:stash_username] = key }
           $default[:stash_username] = ENV['USER']
 
           option :stash_password,
             :short => "-p PASSWORD",
             :long => "--stash-password PASSWORD",
-            :description => "The password for Stash"
+            :description => "The password for Stash",
+            :proc => Proc.new { |key| Chef::Config[:knife][:stash_password] = key }
 
-      		option :stash_hostname,
-      			:long => "--stash-hostname HOSTNAME",
-      			:description => "The hostname for Stash"
+      	  option :stash_hostname,
+            :long => "--stash-hostname HOSTNAME",
+      		:description => "The hostname for Stash",
+            :proc => Proc.new { |key| Chef::Config[:knife][:stash_hostname] = key }
         end
-    	end
+
+      end
 
       def display_stash_error(message,response)
         ui.fatal message
@@ -62,16 +66,14 @@ class Chef
         end
       end
 
-    	def get_config(key)
+      def get_config(key)
+        key = key.to_sym
+    	rval = config[key] || Chef::Config[:knife][key] || $default[key]
+    	Chef::Log.debug("value for config item #{key}: #{rval}")
+    	rval
+      end
 
-    		key = key.to_sym
-    		rval = config[key] || Chef::Config[:knife][key] || $default[key]
-    		Chef::Log.debug("value for config item #{key}: #{rval}")
-    		Chef::Log.debug(sprintf("knife conf::[%s]",Chef::Config[:knife]['node_name']))
-    		rval
-    	end
-
-    	def get_stash_connection
+      def get_stash_connection
         config[:stash_hostname] = ask("Stash Hostname: ") { |q| q.echo = "*" } unless get_config(:stash_hostname)
         config[:stash_username] = ask("Stash Username for #{get_config(:stash_hostname)}: ") { |q| q.echo = "*" } unless get_config(:stash_username)
         config[:stash_password] = ask("Stash Password for #{get_config(:stash_username)}: ") { |q| q.echo = "*" } unless get_config(:stash_password)
@@ -84,7 +86,7 @@ class Chef
         connection.basic_auth(get_config(:stash_username),get_config(:stash_password))
         connection.url_prefix = "http://#{get_config(:stash_hostname)}:7990/rest/api/1.0"
         connection
-    	end
+      end
 
       def get_repo_https_url(project_key,repo)
         "http://#{get_config(:stash_username)}@#{get_config(:stash_hostname)}/scm/#{project_key}/#{repo}.git"
