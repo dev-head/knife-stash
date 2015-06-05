@@ -31,20 +31,17 @@ class Chef
           option :stash_username,
             :short => "-u USERNAME",
             :long => "--stash-username USERNAME",
-            :description => "The username for Stash",
-            :proc => Proc.new { |key| Chef::Config[:knife][:stash_username] = key }
+            :description => "The username for Stash"
           $default[:stash_username] = ENV['USER']
 
           option :stash_password,
             :short => "-p PASSWORD",
             :long => "--stash-password PASSWORD",
-            :description => "The password for Stash",
-            :proc => Proc.new { |key| Chef::Config[:knife][:stash_password] = key }
+            :description => "The password for Stash"
 
       	  option :stash_hostname,
             :long => "--stash-hostname HOSTNAME",
-      		:description => "The hostname for Stash",
-            :proc => Proc.new { |key| Chef::Config[:knife][:stash_hostname] = key }
+      		:description => "The hostname for Stash"
         end
 
       end
@@ -69,9 +66,6 @@ class Chef
       def get_config(key)
         key = key.to_sym
     	rval = config[key] || Chef::Config[:knife][key] || $default[key]
-    	Chef::Log.debug("value for config item #{key}: #{rval}")
-    	Chef::Log.debug(Chef::Config[:knife][:stash_hostname])
-    	Chef::Log.debug(Chef::Config[:knife]['stash_hostname'])
     	rval
       end
 
