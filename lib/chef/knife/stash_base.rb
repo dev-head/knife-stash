@@ -63,9 +63,11 @@ class Chef
       end
 
     	def get_config(key)
+
     		key = key.to_sym
     		rval = config[key] || Chef::Config[:knife][key] || $default[key]
     		Chef::Log.debug("value for config item #{key}: #{rval}")
+    		Chef::Log.debug(sprintf("knife conf::[%s]",Chef::Config[:knife].inspect))
     		rval
     	end
 
