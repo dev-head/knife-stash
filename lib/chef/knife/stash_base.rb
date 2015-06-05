@@ -70,6 +70,8 @@ class Chef
         key = key.to_sym
     	rval = config[key] || Chef::Config[:knife][key] || $default[key]
     	Chef::Log.debug("value for config item #{key}: #{rval}")
+    	Chef::Log.debug(Chef::Config[:knife][:node_name])
+    	Chef::Log.debug(Chef::Config[:knife]['node_name'])
     	rval
       end
 
